@@ -1,3 +1,4 @@
+import { Switch } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
 import styled from 'styled-components';
@@ -41,6 +42,7 @@ const TextField = styled.input`
   margin: 8px 2.5% 8px 16px;
   background: transparent;
   border-radius: 5px;
+  color: #fff;
   box-sizing: border-box;
   border: 1px solid #bbc0c5;
 `;
@@ -70,6 +72,7 @@ export type MethodProps = {
     onChange: () => null;
     type: InputType;
   }[];
+  tokenPaymaster: any;
   action: {
     callback: () => Promise<unknown>;
     disabled: boolean;
@@ -85,6 +88,7 @@ export const Method = ({
   action,
   successMessage,
   failureMessage,
+  tokenPaymaster,
 }: MethodProps) => {
   const [response, setResponse] = useState<unknown>();
   const [error, setError] = useState<unknown>();
@@ -95,6 +99,7 @@ export const Method = ({
         return (
           <TextField
             id={props.id}
+            value={props.value}
             placeholder={props.placeholder}
             onChange={props.onChange}
           />
@@ -149,6 +154,21 @@ export const Method = ({
         ),
       )}
 
+      {tokenPaymaster && (
+        <>
+          <Grid sx={{ paddingLeft: 1 }}>
+            Enable Token Paymaster [Pay gas in USDC]:
+            <Switch
+              checked={tokenPaymaster.isErc20 || false}
+              onChange={(event) => tokenPaymaster.setIsErc20(event)}
+            />
+          </Grid>
+          <Grid sx={{ paddingLeft: 1, fontSize: 12, marginBottom: 2 }}>
+            (Only a certain number of transactions are sponsored)
+          </Grid>
+        </>
+      )}
+
       {action && (
         <MethodButton
           onClick={async () => {
@@ -157,6 +177,7 @@ export const Method = ({
             try {
               // eslint-disable-next-line id-length
               const r = await action.callback();
+              console.log('here', r);
               setResponse(r === undefined ? null : r);
               // eslint-disable-next-line id-length
             } catch (e: any) {
@@ -167,7 +188,6 @@ export const Method = ({
           label={action.label}
         />
       )}
-
       {response !== undefined && (
         <CopyableContainer>
           <AlertBanner
@@ -177,7 +197,6 @@ export const Method = ({
           <CopyableItem value={JSON.stringify(response, null, 2)} />
         </CopyableContainer>
       )}
-
       {error !== undefined && (
         <CopyableContainer>
           <AlertBanner

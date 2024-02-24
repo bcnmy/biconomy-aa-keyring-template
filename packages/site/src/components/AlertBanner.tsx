@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 const StyledAlertContainer = styled.div`
   background-color: ${({ error }: { error?: boolean }) =>
-    error ? '#f8ebed' : '#ebf6ed'};
+    error ? '#f8ebed' : '#BFEA7C'};
   width: 100%;
   height: 40px;
   margin: 10px 0px 10px 0px;
@@ -38,6 +38,7 @@ const CheckIcon = styled(BsFillCheckCircleFill)`
 
 const StyledTitle = styled.p`
   margin: 10px 5px;
+  color: #35374b;
 
   /* Body-LG-Medium */
   font-size: 16px;

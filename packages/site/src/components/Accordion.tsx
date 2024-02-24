@@ -64,6 +64,7 @@ export const Accordion = ({ items }: any) => {
                   description={item.description}
                   inputs={item.inputs}
                   action={item.action}
+                  tokenPaymaster={item.tokenPaymaster}
                 />
               </StyledBox>
             </AccordionContent>

@@ -1,4 +1,4 @@
-import type { KeyringState } from './keyring';
+import type { KeyringState } from './biconomyKeyring';
 import { logger } from './logger';
 
 /**
