@@ -4,7 +4,7 @@
   "proposedName": "Biconomy Smart Account",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MetaMask/snap-account-abstraction-keyring.git"
+    "url": "git+https://github.com/bcnmy/smart-account-keyring-template.git"
   },
   "source": {
     "shasum": "6zr+h1vQl0YPFDXR6ijf/1DA0as9NP7LmAd0BMYM5+4=",
@@ -12,7 +12,7 @@
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/icon.svg",
-        "packageName": "@metamask/snap-account-abstraction-keyring",
+        "packageName": "@biconomy/smart-account-keyring",
         "registry": "https://registry.npmjs.org/"
       }
     }

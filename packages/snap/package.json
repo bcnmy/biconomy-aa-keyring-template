@@ -1,5 +1,5 @@
 {
-  "name": "@metamask/snap-account-abstraction-keyring",
+  "name": "@biconomy/smart-account-keyring",
   "version": "0.2.2",
   "description": "An account abstraction keyring snap that integrates with MetaMask accounts.",
   "keywords": [
@@ -10,13 +10,13 @@
     "account abstraction",
     "4337"
   ],
-  "homepage": "https://github.com/MetaMask/snap-account-abstraction-keyring#readme",
+  "homepage": "https://github.com/bcnmy/smart-account-keyring-template#readme",
   "bugs": {
-    "url": "https://github.com/MetaMask/snap-saccount-abstraction-keyring/issues"
+    "url": "https://github.com/bcnmy/smart-account-keyring-template/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MetaMask/snap-account-abstraction-keyring.git"
+    "url": "git+https://github.com/bcnmy/smart-account-keyring-template.git"
   },
   "license": "(MIT-0 OR Apache-2.0)",
   "main": "dist/bundle.js",
@@ -26,7 +26,7 @@
     "snap.manifest.json"
   ],
   "scripts": {
-    "allow-scripts": "yarn workspace @metamask/snap-account-abstraction-keyring allow-scripts",
+    "allow-scripts": "yarn workspace @biconomy/smart-account-keyring allow-scripts",
     "compile": "hardhat compile",
     "build": "mm-snap build",
     "build:clean": "yarn clean && yarn build",

@@ -1,10 +1,10 @@
 {
-  "name": "@metamask/snap-account-abstraction-keyring-site",
+  "name": "@biconomy/smart-account-keyring-site",
   "version": "0.2.2",
-  "private": true,
+  "private": false,
   "license": "(MIT-0 OR Apache-2.0)",
   "scripts": {
-    "allow-scripts": "yarn workspace @metamask/snap-account-abstraction-keyring allow-scripts",
+    "allow-scripts": "yarn workspace @biconomy/smart-account-keyring allow-scripts",
     "build": "rimraf .cache && cross-env GATSBY_TELEMETRY_DISABLED=1 gatsby build --prefix-paths",
     "clean": "rimraf public .cache",
     "lint": "yarn lint:eslint && yarn lint:misc && yarn lint:deps && yarn lint:types && yarn lint:changelog",
