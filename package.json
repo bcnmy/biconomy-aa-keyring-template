@@ -1,7 +1,6 @@
 {
   "name": "@biconomy/smart-account-keyring-monorepo",
   "version": "0.2.2",
-  "private": false,
   "description": "An account abstraction keyring snap that integrates with MetaMask accounts.",
   "keywords": [
     "metamask",
