@@ -294,7 +294,7 @@ export class BiconomyKeyring implements Keyring {
       method: 'snap_getEntropy',
       params: {
         version: 1,
-        salt: 'bicoaasnap03',
+        salt: 'bicoaasnap04',
       },
     });
   }

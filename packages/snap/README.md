@@ -1,4 +1,4 @@
-# Account Abstraction Keyring Snap
+# Smart Account Keyring Snap
 
 This repository contains an account abstraction example of a keyring snap.
 

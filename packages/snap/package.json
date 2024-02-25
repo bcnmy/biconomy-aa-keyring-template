@@ -1,6 +1,6 @@
 {
   "name": "@biconomy/smart-account-keyring",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "An account abstraction keyring snap that integrates with MetaMask accounts.",
   "keywords": [
     "metamask",
