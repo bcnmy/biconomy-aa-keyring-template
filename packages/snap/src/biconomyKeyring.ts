@@ -40,11 +40,7 @@ import { v4 as uuid } from 'uuid';
 import type { Hex } from 'viem';
 import { encodeAbiParameters, parseAbiParameters } from 'viem';
 
-import { DEFAULT_AA_FACTORIES } from './constants/aa-factories';
-import {
-  ACCOUNT_RECOVERY_MODULE_ADDRESS,
-  ECDSA_MODULE_ADDRESS,
-} from './constants/biconomy-addresses';
+import { ECDSA_MODULE_ADDRESS } from './constants/biconomy-addresses';
 import { CHAIN_IDS } from './constants/chain-ids';
 import {
   DUMMY_SIGNATURE,
@@ -55,14 +51,7 @@ import { USDC_ADDRESS_MUMBAI } from './constants/tokenConfig';
 import { logger } from './logger';
 import { InternalMethod } from './permissions';
 import { saveState } from './stateManagement';
-import {
-  EntryPoint__factory,
-  // SimpleAccount__factory,
-  SimpleAccountFactory__factory,
-  // VerifyingPaymaster__factory,
-} from './types';
-import { BiconomyAccountRecoveryAbi } from './utils/abi/BiconomyAccountRecoveryAbi';
-import { BiconomyImplementationAbi } from './utils/abi/BiconomyImplementationAbi';
+import { EntryPoint__factory } from './types';
 import { getBiconomySmartAccount } from './utils/biconomyAccount';
 import { getBundlerUrl } from './utils/chainConfig';
 import { getUserOperationHash } from './utils/ecdsa';
@@ -109,20 +98,9 @@ export type UserOperationStruct = {
 };
 
 export type ChainConfig = {
-  simpleAccountFactory?: string;
   entryPoint?: string;
   bundlerUrl?: string;
-  customVerifyingPaymasterPK?: string;
-  customVerifyingPaymasterAddress?: string;
 };
-
-// export type AccountRecoverySettings = {
-//   guardianId: string;
-//   accountAddress: string;
-//   validUntil: number;
-//   securityDelay: number;
-//   numRecoveries: number;
-// };
 
 export type KeyringState = {
   wallets: Record<string, Wallet>;
@@ -286,131 +264,17 @@ export class BiconomyKeyring implements Keyring {
     throw new Error('UserOp not signed');
   }
 
-  // called by setAccountRecoveryExperimental
-  /* async setAccountRecovery(
-    accountRecoverySettings: AccountRecoverySettings,
-  ): Promise<TransactionDetails> {
-    const wallet = this.#getWalletByAddress(
-      accountRecoverySettings.accountAddress,
-    );
-
-    if (!wallet) {
-      throwError(
-        `[Snap] Account '${accountRecoverySettings.accountAddress}' not found`,
-      );
-    }
-
-    const { chainId } = await provider.getNetwork();
-
-    const smartAccount = await getBiconomySmartAccount(
-      Number(chainId),
-      wallet.privateKey as Hex,
-    );
-
-    const { validUntil } = accountRecoverySettings;
-    console.log('validUntil ', validUntil);
-
-    const accountRecoverySetupData = encodeFunctionData({
-      abi: BiconomyAccountRecoveryAbi,
-      functionName: 'initForSmartAccount',
-      args: [
-        [accountRecoverySettings.guardianId as Hex],
-        [
-          {
-            validUntil,
-            validAfter: 0,
-          },
-        ],
-        1,
-        accountRecoverySettings.securityDelay,
-        accountRecoverySettings.numRecoveries,
-      ],
-    });
-
-    console.log('accountRecoverySetupData ', accountRecoverySetupData);
-
-    const setupAndEnableModuleData = encodeFunctionData({
-      abi: BiconomyImplementationAbi,
-      functionName: 'setupAndEnableModule',
-      args: [ACCOUNT_RECOVERY_MODULE_ADDRESS, accountRecoverySetupData],
-    });
-
-    console.log('setupAndEnableModuleData ', setupAndEnableModuleData);
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    const { waitForTxHash } = await smartAccount.sendTransaction(
-      {
-        to: await smartAccount.getAccountAddress(),
-        value: '0x0',
-        data: setupAndEnableModuleData,
-      },
-      { paymasterServiceData: { mode: PaymasterMode.SPONSORED } },
-    );
-    const { transactionHash } = await waitForTxHash();
-    console.log('transactionHash ', transactionHash);
-    if (transactionHash) {
-      await snap.request({
-        method: 'snap_dialog',
-        params: {
-          type: 'confirmation',
-          content: panel([
-            heading('Transaction sent'),
-            divider(),
-            text(`Transaction hash :`),
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            text(`**${transactionHash}**`),
-          ]),
-        },
-      });
-    }
-    return {
-      userOpHash: transactionHash ?? '',
-    };
-  }*/
-
   async setConfig(config: ChainConfig): Promise<ChainConfig> {
     const { chainId } = await provider.getNetwork();
-    if (
-      config.simpleAccountFactory &&
-      !ethers.isAddress(config.simpleAccountFactory)
-    ) {
-      throwError(
-        `[Snap] Invalid Simple Account Factory Address: ${
-          config.simpleAccountFactory as string
-        }`,
-      );
-    }
     if (config.entryPoint && !ethers.isAddress(config.entryPoint)) {
       throwError(
         `[Snap] Invalid EntryPoint Address: ${config.entryPoint as string}`,
-      );
-    }
-    if (
-      config.customVerifyingPaymasterAddress &&
-      !ethers.isAddress(config.customVerifyingPaymasterAddress)
-    ) {
-      throwError(
-        `[Snap] Invalid Verifying Paymaster Address: ${
-          config.customVerifyingPaymasterAddress as string
-        }`,
       );
     }
     const bundlerUrlRegex =
       /^(https?:\/\/)?[\w\\.-]+(:\d{2,6})?(\/[\\/\w \\.-]*)?$/u;
     if (config.bundlerUrl && !bundlerUrlRegex.test(config.bundlerUrl)) {
       throwError(`[Snap] Invalid Bundler URL: ${config.bundlerUrl}`);
-    }
-    if (config.customVerifyingPaymasterPK) {
-      try {
-        // eslint-disable-next-line no-new -- doing this to validate the pk
-        new ethers.Wallet(config.customVerifyingPaymasterPK);
-      } catch (error) {
-        throwError(
-          `[Snap] Invalid Verifying Paymaster Private Key: ${
-            (error as Error).message
-          }`,
-        );
-      }
     }
     this.#state.config[Number(chainId)] = {
       ...this.#state.config[Number(chainId)],
@@ -430,7 +294,7 @@ export class BiconomyKeyring implements Keyring {
       method: 'snap_getEntropy',
       params: {
         version: 1,
-        salt: 'bicoaasnap02',
+        salt: 'bicoaasnap03',
       },
     });
   }
@@ -495,15 +359,6 @@ export class BiconomyKeyring implements Keyring {
     if (accountCollision) {
       throwError(`[Snap] Account Salt already used, please retry.`);
     }
-
-    // Note: this is commented out because the AA is not deployed yet.
-    // Will store the initCode and salt in the wallet object to deploy with first transaction later.
-    // try {
-    //   await aaFactory.createAccount(admin, salt);
-    //   logger.info('[Snap] Deployed AA Account Successfully');
-    // } catch (error) {
-    //   logger.error(`Error to deploy AA: ${(error as Error).message}`);
-    // }
 
     try {
       const account: KeyringAccount = {
@@ -635,16 +490,6 @@ export class BiconomyKeyring implements Keyring {
       };
     }
 
-    // Expermiental // Test
-    // if (method === 'snap.account.setRecovery') {
-    //   return {
-    //     pending: false,
-    //     result: await this.setAccountRecovery(
-    //       (params as [AccountRecoverySettings])[0],
-    //     ),
-    //   };
-    // }
-
     if (method === 'snap.account.sendTransaction') {
       return {
         pending: false,
@@ -680,12 +525,10 @@ export class BiconomyKeyring implements Keyring {
     return match ?? throwError(`Account '${address}' not found`);
   }
 
-  // TODO:
   // can be several approaches to derive private key
   // 1. generate random private key
-  // 2. derive from private key of first metamask eoa account
-  // 3. generate entropy
-  // 4.
+  // 2. generate entropy
+  // 3.
 
   #getKeyPair(
     entropy: string,
@@ -942,30 +785,6 @@ export class BiconomyKeyring implements Keyring {
     );
 
     return finalSignature;
-  }
-
-  // Review: (possibly) Marked for Deletion
-  async #getAAFactory(chainId: number, signer: ethers.Wallet) {
-    if (!this.#isSupportedChain(chainId)) {
-      throwError(`[Snap] Unsupported chain ID: ${chainId}`);
-    }
-    let factoryAddress: string;
-    const chainConfig = this.#getChainConfig(chainId);
-    if (chainConfig?.simpleAccountFactory) {
-      factoryAddress = chainConfig.simpleAccountFactory;
-    } else {
-      const entryPointVersion =
-        DEFAULT_ENTRYPOINTS[chainId]?.version.toString() ??
-        throwError(`[Snap] Unknown EntryPoint for chain ${chainId}`);
-      factoryAddress =
-        (DEFAULT_AA_FACTORIES[entryPointVersion] as Record<string, string>)?.[
-          chainId.toString()
-        ] ??
-        throwError(
-          `[Snap] Unknown AA Factory address for chain ${chainId} and EntryPoint version ${entryPointVersion}`,
-        );
-    }
-    return SimpleAccountFactory__factory.connect(factoryAddress, signer);
   }
 
   async #getEntryPoint(chainId: number, signer: ethers.Wallet) {

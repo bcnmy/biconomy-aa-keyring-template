@@ -39,9 +39,6 @@ export const originPermissions = new Map<string, string[]>([
       KeyringRpcMethod.RejectRequest,
       // Custom methods
       InternalMethod.SetConfig,
-      'genPk',
-      'snap.internal.setGuardianId',
-      'snap.account.setRecovery',
       'snap.account.sendTransaction',
     ],
   ],
