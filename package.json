@@ -1,23 +1,24 @@
 {
-  "name": "@metamask/snap-account-abstraction-keyring-monorepo",
-  "version": "0.2.2",
-  "private": true,
+  "name": "@biconomy/smart-account-keyring-monorepo",
+  "version": "0.2.3",
   "description": "An account abstraction keyring snap that integrates with MetaMask accounts.",
   "keywords": [
     "metamask",
     "snap",
+    "biconomy",
+    "smart account",
     "keyring",
     "account",
     "account abstraction",
     "4337"
   ],
-  "homepage": "https://github.com/MetaMask/snap-account-abstraction-keyring#readme",
+  "homepage": "https://github.com/bcnmy/smart-account-keyring-template#readme",
   "bugs": {
-    "url": "https://github.com/MetaMask/snap-account-abstraction-keyring/issues"
+    "url": "https://github.com/bcnmy/smart-account-keyring-template/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/snap-account-abstraction-keyring.git"
+    "url": "https://github.com/bcnmy/smart-account-keyring-template.git"
   },
   "license": "(MIT-0 OR Apache-2.0)",
   "author": "",
@@ -26,10 +27,10 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach --parallel --verbose --topological run build",
-    "build:dapp": "yarn workspace @metamask/snap-account-abstraction-keyring-site build",
-    "build:snap": "yarn workspace @metamask/snap-account-abstraction-keyring build",
+    "build:dapp": "yarn workspace @biconomy/smart-account-keyring-site build",
+    "build:snap": "yarn workspace @biconomy/smart-account-keyring build",
     "build:docs": "typedoc",
-    "postinstall": "yarn workspace @metamask/snap-account-abstraction-keyring compile",
+    "postinstall": "yarn workspace @biconomy/smart-account-keyring compile",
     "lint": "yarn workspaces foreach --parallel --verbose run lint",
     "lint:deps": "yarn workspaces foreach --parallel --verbose run depcheck",
     "lint:eslint": "yarn workspaces foreach --parallel --verbose run lint:eslint",

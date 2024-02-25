@@ -1,0 +1,7 @@
+scripts
+test
+node_modules
+packages/site/node_modules
+packages/snap/node_modules
+packages/snap/src/types
+.yarn

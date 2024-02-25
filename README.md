@@ -1,4 +1,4 @@
-# Simple Account Abstraction Snap
+# Biconomy Smart Account Snap
 
 This repository contains a simple example of an account abstraction keyring snap.
 

@@ -137,31 +137,6 @@ const Index = () => {
     await client.submitRequest(request);
   };
 
-  // UserOp methods (default to send from first AA account created)
-  const setAccountRecoveryExperimental = async (
-    /* recoveryDetails: string*/ guardianIdPassed: string,
-  ) => {
-    const accounts: any = await ethereum.request({ method: 'eth_accounts' });
-    console.log('current selected account ', accounts[0]);
-    const recoveryInfo = {
-      guardianId: guardianIdPassed,
-      accountAddress: accounts[0],
-      validUntil: 1740078291,
-      securityDelay: 15,
-      numRecoveries: 1,
-    };
-    const request: KeyringRequest = {
-      id: uuid.v4(),
-      scope: '',
-      account: uuid.v4(),
-      request: {
-        method: 'snap.account.setRecovery',
-        params: [recoveryInfo],
-      },
-    };
-    await client.submitRequest(request);
-  };
-
   const mintNFT = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     const signer = provider.getSigner();
@@ -180,7 +155,7 @@ const Index = () => {
     await nftContract.safeMint(accounts[0]);
   };
 
-  const mintNFTExperimental = async () => {
+  const sendAnyCustomTransactionExample = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     const signer = provider.getSigner();
     // Review : test signer.getAddress()
@@ -223,6 +198,7 @@ const Index = () => {
 
     const guardian = guardianIdPassed ?? guardianId;
 
+    // Note: hardcoded values could come from a input fields
     const accountRecoverySetupData =
       accountRecoveryInterface.encodeFunctionData('initForSmartAccount', [
         [guardian],
@@ -270,18 +246,6 @@ const Index = () => {
     );
   };
 
-  // const testCustomMethod = async () => {
-  //   const response = await window.ethereum.request({
-  //     method: 'wallet_invokeSnap',
-  //     params: {
-  //       snapId: defaultSnapOrigin,
-  //       request: { method: 'genPk' },
-  //     },
-  //   });
-  //   console.log('response', response);
-  //   return response;
-  // };
-
   const signMessage = async (message: any) => {
     // Notice: this could be done rather at beginning / After every createAccount
     // await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -318,6 +282,8 @@ const Index = () => {
     }
   };
 
+  // Could possibly have paymasterUrl
+  // For simple account keyring it used to be paymaster address and verifying paymaster pk
   const userOpMethods = [
     {
       name: 'Set Chain Config',
@@ -330,11 +296,8 @@ const Index = () => {
           type: InputType.TextArea,
           placeholder:
             '{\n' +
-            '    "simpleAccountFactory": "0x97a0924bf222499cBa5C29eA746E82F230730293",\n' +
             '    "entryPoint": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",\n' +
             '    "bundlerUrl": "https://bundler.example.com/rpc",\n' +
-            '    "customVerifyingPaymasterPK": "abcd1234qwer5678tyui9012ghjk3456zxcv7890",\n' +
-            '    "customVerifyingPaymasterAddress": "0x123456789ABCDEF0123456789ABCDEF012345678"\n' +
             '}',
           onChange: (event: any) =>
             setChainConfigObject(event.currentTarget.value),
@@ -349,6 +312,7 @@ const Index = () => {
     },
   ];
 
+  // TODO: Token approval of USDC as per the selected chainId (if supported)
   const accountManagementMethods = [
     {
       name: 'Sign a Message by Guardian',
@@ -373,28 +337,6 @@ const Index = () => {
       },
       successMessage: guardianId,
     },
-    // {
-    //   name: 'Setup Recovery (Experimental)',
-    //   description:
-    //     'Setting up recovery on chain using set guardian (Custom Keyring API)',
-    //   inputs: [
-    //     {
-    //       id: 'smart account guardian id',
-    //       title: 'Generated guardian Id',
-    //       value: guardianId,
-    //       type: InputType.TextField,
-    //       placeholder:
-    //         'E.g. 0x4277a27c57e92d7f5f7d8b31b887d63eca97cfb3a94fcecbf647cb13258dc76a',
-    //       onChange: (event: any) =>
-    //         setAccountAddress(event.currentTarget.value),
-    //     },
-    //   ],
-    //   action: {
-    //     callback: async () =>
-    //       await setAccountRecoveryExperimental(guardianId as string),
-    //     label: 'Set Recovery',
-    //   },
-    // },
     {
       name: 'Setup Recovery and deploy account',
       description: 'Setting up recovery on chain using set guardian',
@@ -415,14 +357,6 @@ const Index = () => {
         label: 'Set Recovery',
       },
     },
-    // {
-    //   name: 'Generate new pk',
-    //   description: 'Custom snap method',
-    //   action: {
-    //     callback: async () => await testCustomMethod(),
-    //     label: 'Test',
-    //   },
-    // },
     {
       name: 'Approve Token Paymaster',
       // description: 'Approve Token Paymaster',
@@ -450,15 +384,6 @@ const Index = () => {
       },
       successMessage: 'Sending UserOp to Mint an NFT',
     },
-    // {
-    //   name: 'Mint NFT/Custom tx Experimental',
-    //   description: 'Mint NFT and pay with ERC20',
-    //   action: {
-    //     callback: async () => await mintNFTExperimental(),
-    //     label: 'Mint',
-    //   },
-    //   successMessage: 'Sending UserOp to Mint an NFT',
-    // },
   ];
   return (
     <Container>
