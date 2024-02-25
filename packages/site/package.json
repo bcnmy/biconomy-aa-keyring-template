@@ -1,6 +1,6 @@
 {
   "name": "@biconomy/smart-account-keyring-site",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "(MIT-0 OR Apache-2.0)",
   "scripts": {
     "allow-scripts": "yarn workspace @biconomy/smart-account-keyring allow-scripts",
