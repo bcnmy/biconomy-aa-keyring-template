@@ -7,7 +7,7 @@
     "url": "git+https://github.com/bcnmy/smart-account-keyring-template.git"
   },
   "source": {
-    "shasum": "WNF5vupZyrHUGOA2gr9JRvOnuVH00K7VCQYgi6eWac8=",
+    "shasum": "O7AXHBDQjmSWtrrabr+7aXJnfhHcb+n4JcaHQgQ3VZg=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
