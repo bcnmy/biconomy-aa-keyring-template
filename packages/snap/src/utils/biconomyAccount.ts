@@ -34,9 +34,6 @@ export const getBiconomySmartAccount = async (
   });
 
   const bundlerUrl = getBundlerUrl(chainId);
-  if (bundlerUrl === undefined || bundlerUrl === '') {
-    throw new Error('Bundler url is not defined');
-  }
 
   const smartAccount = await createSmartAccountClient({
     signer: client,

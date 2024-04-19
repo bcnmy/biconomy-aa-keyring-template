@@ -7,6 +7,4 @@ export const ACCOUNT_RECOVERY_MODULE_ADDRESS =
 export const BICONOMY_ERC20_PAYMASTER_MULTICHAIN_ADDRESS =
   '0x00000f7365cA6C59A2C93719ad53d567ed49c14C';
 
-// would want to keep a mapping per chainId for supported stable coins symbols
-
-export const POLYGON_MUMBAI_USDC = '0xdA5289fCAAF71d52a80A254da614a192b693e977';
+// Todo: would want to keep a mapping per chainId for supported stable coins symbols

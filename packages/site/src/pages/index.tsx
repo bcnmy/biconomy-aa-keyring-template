@@ -113,7 +113,7 @@ const Index = () => {
     await syncAccounts();
     setAccountAddress(newAccount.address);
     // Review
-    // await window.ethereum.request({ method: 'eth_requestAccounts' });
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
     console.log('newAccount', newAccount);
     setAccountObject(JSON.stringify(newAccount));
     setAccountAddrInput(newAccount.address);

@@ -47,13 +47,12 @@ import {
   getDummyPaymasterAndData,
 } from './constants/dummy-values';
 import { DEFAULT_ENTRYPOINTS } from './constants/entrypoints';
-import { USDC_ADDRESS_MUMBAI } from './constants/tokenConfig';
 import { logger } from './logger';
 import { InternalMethod } from './permissions';
 import { saveState } from './stateManagement';
 import { EntryPoint__factory } from './types';
 import { getBiconomySmartAccount } from './utils/biconomyAccount';
-import { getBundlerUrl } from './utils/chainConfig';
+import { getBundlerUrl, getPreferredTokenAddress } from './utils/chainConfig';
 import { getUserOperationHash } from './utils/ecdsa';
 import { getSigner, provider } from './utils/ethers';
 import {
@@ -164,8 +163,8 @@ export const promptUser = async (
 
 // Applies only for Mumbai
 // Todo: Get based on chainId
-const PREFERRED_FEE_TOKEN_ADDRESS =
-  '0xdA5289fCAAF71d52a80A254da614a192b693e977';
+/* const PREFERRED_FEE_TOKEN_ADDRESS =
+  '0xdA5289fCAAF71d52a80A254da614a192b693e977';*/
 
 export class BiconomyKeyring implements Keyring {
   #state: KeyringState;
@@ -194,6 +193,8 @@ export class BiconomyKeyring implements Keyring {
 
     const { chainId } = await provider.getNetwork();
 
+    const feeTokenAddress = getPreferredTokenAddress(Number(chainId));
+
     const smartAccount = await getBiconomySmartAccount(
       Number(chainId),
       wallet.privateKey as Hex,
@@ -211,7 +212,7 @@ export class BiconomyKeyring implements Keyring {
 
     const useropWithPnd = await smartAccount.getPaymasterUserOp(userop, {
       mode: PaymasterMode.ERC20,
-      preferredToken: USDC_ADDRESS_MUMBAI,
+      preferredToken: feeTokenAddress,
     });
 
     const signer = getSigner(wallet.privateKey);
@@ -294,7 +295,7 @@ export class BiconomyKeyring implements Keyring {
       method: 'snap_getEntropy',
       params: {
         version: 1,
-        salt: 'biconomyaasnap01',
+        salt: 'biconomyaasnap06',
       },
     });
   }
@@ -642,9 +643,6 @@ export class BiconomyKeyring implements Keyring {
     // 3. dummyPaymasterAndData is perhpas not necessary and can be sent 0x for using biconomy paymaster
 
     const bundlerUrl = getBundlerUrl(Number(chainId));
-    if (bundlerUrl === '' || bundlerUrl === undefined) {
-      throw new Error('Bundler URL not found');
-    }
 
     const ethBaseUserOp: EthBaseUserOperation = {
       nonce: biconomyBaseUserOp?.nonce?.toString() ?? '0x00',
@@ -672,11 +670,12 @@ export class BiconomyKeyring implements Keyring {
     address: string,
     userOp: EthUserOperation,
   ): Promise<EthUserOperationPatch> {
-    console.log('patch userop called here ');
     console.log('userOp coming from upstream ', userOp);
     const wallet = this.#getWalletByAddress(address);
 
     const { chainId } = await provider.getNetwork();
+
+    const feeTokenAddress = getPreferredTokenAddress(Number(chainId));
 
     const smartAccount = await getBiconomySmartAccount(
       Number(chainId),
@@ -717,7 +716,7 @@ export class BiconomyKeyring implements Keyring {
 
       let useropWithPnd;
 
-      if (Number(biconomyBaseUserOp.nonce) <= 2) {
+      if (Number(biconomyBaseUserOp.nonce) <= 10) {
         useropWithPnd = await smartAccount.getPaymasterAndData(
           biconomyBaseUserOp,
           {
@@ -726,16 +725,17 @@ export class BiconomyKeyring implements Keyring {
           },
         );
       } else {
-        useropWithPnd = await smartAccount.getPaymasterUserOp(
-          biconomyBaseUserOp,
-          {
-            mode: PaymasterMode.ERC20,
-            calculateGasLimits: false,
-            // Note: how can this come from some settings
-            preferredToken: PREFERRED_FEE_TOKEN_ADDRESS, // Mumbai USDC (get from config)
-            skipPatchCallData: true,
-          },
-        );
+        return { paymasterAndData: '0x' };
+        // useropWithPnd = await smartAccount.getPaymasterUserOp(
+        //   biconomyBaseUserOp,
+        //   {
+        //     mode: PaymasterMode.ERC20,
+        //     calculateGasLimits: false,
+        //     // Note: how can this come from some settings done on site
+        //     preferredToken: feeTokenAddress,
+        //     skipPatchCallData: true,
+        //   },
+        // );
       }
 
       console.log('useropWithPnd ', useropWithPnd);

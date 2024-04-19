@@ -77,7 +77,7 @@ async function getEntropy() {
     method: 'snap_getEntropy',
     params: {
       version: 1,
-      salt: 'biconomyaasnap01',
+      salt: 'biconomyaasnap06',
     },
   });
 }
